@@ -1,0 +1,32 @@
+const int potensiometerPin = A0;  // Pin untuk potensiometer
+const int led1Pin = 9;           // Pin untuk LED pertama
+const int led2Pin = 10;          // Pin untuk LED kedua
+
+void setup() {
+  pinMode(led1Pin, OUTPUT);
+  pinMode(led2Pin, OUTPUT);
+
+  // Mulai komunikasi dengan Serial Monitor
+  Serial.begin(9600);
+}
+
+void loop() {
+  int nilaiPotensiometer = analogRead(potensiometerPin);  // Baca nilai potensiometer
+
+  if (nilaiPotensiometer < 512) {
+    digitalWrite(led1Pin, HIGH);
+    digitalWrite(led2Pin, LOW);
+  } else {
+    digitalWrite(led1Pin, LOW);
+    digitalWrite(led2Pin, HIGH);
+  }
+
+  // Kirim nilai potensiometer dan status LED ke Serial Monitor
+  Serial.print("Nilai Potensiometer: ");
+  Serial.print(nilaiPotensiometer);
+  Serial.print(" - LED1: ");
+  Serial.print(digitalRead(led1Pin));
+  Serial.print(" - LED2: ");
+  Serial.println(digitalRead(led2Pin));
+  delay(100);  // Beri sedikit keterlambatan agar Serial Monitor dapat membaca hasil dengan baik
+}
