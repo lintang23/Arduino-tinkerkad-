@@ -1,0 +1,48 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+// Inisialisasi LCD dengan alamat 0x20, 16 kolom, dan 2 baris
+LiquidCrystal_I2C lcd(0x20, 16, 2);
+
+const int LDR_PIN = A0;   // Pin yang terhubung ke sensor LDR
+const int LED_PIN = 2;    // Pin yang terhubung ke LED
+const int PIR_PIN = 3;    // Pin yang terhubung ke sensor PIR
+
+int motionDetected = 0;    // Variable untuk menyimpan status deteksi gerakan
+
+void setup() {
+  lcd.init();              // Inisialisasi LCD
+  lcd.backlight();         // Aktifkan backlight LCD
+  pinMode(LDR_PIN, INPUT);  // Setel pin LDR sebagai input
+  pinMode(LED_PIN, OUTPUT); // Setel pin LED sebagai output
+  pinMode(PIR_PIN, INPUT);  // Setel pin PIR sebagai input
+  Serial.begin(9600);      // Mulai komunikasi serial dengan kecepatan 9600 bps
+}
+
+void loop() {
+  int lightValue = analogRead(LDR_PIN);  // Membaca nilai dari sensor LDR
+  int pirValue = digitalRead(PIR_PIN);  // Membaca nilai dari sensor PIR
+
+  // Cetak nilai sensor LDR ke Serial Monitor
+  Serial.print("Nilai LDR: ");
+  Serial.println(lightValue);
+
+  if (lightValue > 100 && pirValue == HIGH) {
+    motionDetected = 1;
+    digitalWrite(LED_PIN, HIGH);  // Menghidupkan LED jika cahaya rendah dan ada gerakan
+  } else {
+    motionDetected = 0;
+    digitalWrite(LED_PIN, LOW);   // Mematikan LED jika tidak ada gerakan atau cahaya cukup terang
+  }
+
+  if (motionDetected == 1) {
+    lcd.setCursor(0, 0);        // Posisi kursor di baris 1, kolom 1
+    lcd.print("Gerakan Terdeteksi");
+    lcd.setCursor(0, 1);        // Posisi kursor di baris 2, kolom 1
+    lcd.print("Malam Hari");
+  } else {
+    lcd.clear();               // Membersihkan tampilan LCD jika tidak ada gerakan
+  }
+
+  delay(1000); // Delay untuk mengurangi gangguan deteksi yang berlebihan
+}
